@@ -343,7 +343,7 @@ class Replace {
 					$tmp_data = $data;
 					$data     = str_replace( $from, $to, $data );
 					if ( is_serialized( $data, false ) ) {
-						$data = str_replace( $from, '|' . $to, $tmp_data );
+						// $data = str_replace( $from, '|' . $to, $tmp_data );
 					}
 
 					if ( $marker ){
