@@ -354,17 +354,12 @@ class Exporter {
 							}
 						}
 
-						if ( $new_table !== $table ) {
-							$value = $this->replace->recursive_unserialize_replace(
-								$table_prefix, $new_table_prefix,
-								$value
-							);
-						}
-						//skip replace if no search pattern
+						//skip replace if no search pattern or no csv
 						//check if we need to replace something
 						//skip primary_key
-						if ( $search !== '' && $column !== $primary_key && $column !== 'guid' ) {
+						if ( ( $search !== '' || $csv !== null ) && $column !== $primary_key && $column !== 'guid' ) {
 
+							// Execute search and replace of the single search and replace fields
 							// Check if column is expected to hold serialized value.
 							if ( in_array( strtolower( $column ), $maybe_serialized, true ) ) {
 								$edited_data = $this->replace->recursive_unserialize_replace(
@@ -375,11 +370,15 @@ class Exporter {
 								$edited_data = str_replace( $search, $replace, $value );
 							}
 
+							// Execute search and replace of the CSV values							
 							if ( $csv !== NULL ) {
 								foreach ( $this->csv_data as $entry ) {
-									$edited_data = $this->replace->recursive_unserialize_replace( $entry[ 'search' ],
-									                                                              $entry[ 'replace' ],
-									                                                              $edited_data );
+									$column_maybe_serialized = in_array( strtolower( $column ), $maybe_serialized, true );
+									if ( $column_maybe_serialized ) {
+										$edited_data = $this->replace->recursive_unserialize_replace(
+											$entry[ 'search' ], $entry[ 'replace' ], $edited_data
+										);
+									}
 								}
 							}
 							// Something was changed
