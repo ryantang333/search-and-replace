@@ -308,8 +308,14 @@ class Replace {
 
 		// some unserialized data cannot be re-serialised eg. SimpleXMLElements
 		try {
-			$unserialize_options = array( 'allowed_classes' => TRUE );
-			$unserialized = @unserialize( $data, $unserialize_options );
+			// PHP versions below 7.0 do not allow the second unserialize parameter
+			if (version_compare(phpversion(), '7.0', '<')) {
+				$unserialized = @unserialize( $data );
+			} else {
+				$unserialize_options = array( 'allowed_classes' => TRUE );
+				$unserialized = @unserialize( $data, $unserialize_options );
+
+			}
 			if ( is_string( $data ) && is_serialized( $data ) && $unserialized !== false ) {
 				// Changed to maybe_unserialize because wp serialization != php serialization.
 				$data = $this->recursive_unserialize_replace( $from, $to, $unserialized, true );
