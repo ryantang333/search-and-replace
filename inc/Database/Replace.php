@@ -308,8 +308,9 @@ class Replace {
 
 		// some unserialized data cannot be re-serialised eg. SimpleXMLElements
 		try {
-
-			if ( is_string( $data ) && is_serialized( $data ) && ( $unserialized = @unserialize( $data, false ) ) !== false ) {
+			$unserialize_options = array( 'allowed_classes' => TRUE );
+			$unserialized = @unserialize( $data, $unserialize_options );
+			if ( is_string( $data ) && is_serialized( $data ) && $unserialized !== false ) {
 				// Changed to maybe_unserialize because wp serialization != php serialization.
 				$data = $this->recursive_unserialize_replace( $from, $to, $unserialized, true );
 			} elseif ( is_array( $data ) ) {
@@ -334,7 +335,7 @@ class Replace {
 
 					$marker = false;
 					if ( is_serialized_string( $data ) ) {
-						$data   = @unserialize( $data );
+						$data   = $unserialized;
 						$marker = true;
 					}
 
@@ -351,8 +352,15 @@ class Replace {
 					}
 
 				} else {
-					$data = str_replace( $from, $to, $data );
-					$data = serialize( $data );
+					// $data can be __PHP_Incomplete_Class when unserializing an object of some Class
+					// that this plugin doesn't have access to (e.g. from another plugin). If this happens,
+					// ignore it to prevent runtime errors.
+					// __PHP_Incomplete_Class is special in that is_object returns false but gettype returns true
+					$isIncompleteClass = !is_object($data) && gettype($data) == 'object';
+					if(!$isIncompleteClass) {
+						$data = str_replace( $from, $to, $data );
+						$data = serialize( $data );
+					}
 				}
 			}
 
