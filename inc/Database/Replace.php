@@ -12,7 +12,7 @@ use Inpsyde\SearchReplace\Service;
  * @package Inpsyde\SearchReplace\Database
  */
 class Replace {
-
+	
 	/**
 	 * The search string
 	 */
@@ -314,8 +314,8 @@ class Replace {
 			} else {
 				$unserialize_options = array( 'allowed_classes' => TRUE );
 				$unserialized = @unserialize( $data, $unserialize_options );
-
 			}
+
 			if ( is_string( $data ) && is_serialized( $data ) && $unserialized !== false ) {
 				// Changed to maybe_unserialize because wp serialization != php serialization.
 				$data = $this->recursive_unserialize_replace( $from, $to, $unserialized, true );
