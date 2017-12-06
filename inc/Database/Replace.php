@@ -356,17 +356,6 @@ class Replace {
 					if ( $marker ){
 						$data = maybe_serialize($data);
 					}
-
-				} else {
-					// $data can be __PHP_Incomplete_Class when unserializing an object of some Class
-					// that this plugin doesn't have access to (e.g. from another plugin). If this happens,
-					// ignore it to prevent runtime errors.
-					// __PHP_Incomplete_Class is special in that is_object returns false but gettype returns true
-					$isIncompleteClass = !is_object($data) && gettype($data) == 'object';
-					if(!$isIncompleteClass) {
-						$data = str_replace( $from, $to, $data );
-						$data = serialize( $data );
-					}
 				}
 			}
 
