@@ -314,7 +314,7 @@ class SearchReplace extends AbstractPage implements PageInterface {
 		}
 
 	}
-
+		
 	/**
 	 * Retrieve Selected Tables
 	 *
